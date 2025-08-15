@@ -1,0 +1,42 @@
+{
+  "name": "SoulSync-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DimaBarbara/SoulSync-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DimaBarbara/SoulSync-backend/issues"
+  },
+  "homepage": "https://github.com/DimaBarbara/SoulSync-backend#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.17.1",
+    "nodemailer": "^7.0.5",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
+  }
+}
