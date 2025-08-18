@@ -22,7 +22,7 @@ class TokenService {
       const userData = jwt.verify(token, getEnvVar('JWT_ACCESS_SECRET'));
       return userData
     } catch (error) {
-      
+      console.log(error)
     }
   }
   validateRefreshToken(token) {
