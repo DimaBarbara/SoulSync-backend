@@ -15,6 +15,8 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
       });
 
       return res.status(201).json({
@@ -33,6 +35,8 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
       });
       return res.status(201).json({
         status: 201,
@@ -71,6 +75,8 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
       });
       return res.status(201).json({
         status: 201,
