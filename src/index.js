@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   credentials: true,
-  origin: 'http://localhost:3002'
+  origin: 'https://soul-sync-frontend.vercel.app/'
 }));
 app.use('/api', router);
 app.use(errorMiddleware);
