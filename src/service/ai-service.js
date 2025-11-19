@@ -1,48 +1,76 @@
-const { HfInference } = require('@huggingface/inference');
 const Mood = require('../models/mood-model');
 const { getEnvVar } = require('../utils/getEnvVar');
+const axios = require('axios');
 
-const HF_ACCESS_TOKEN = getEnvVar('HUGGING_FACE_API_KEY');
-const hf = new HfInference(HF_ACCESS_TOKEN);
+const API_KEY = getEnvVar("AZURE_OPENAI_API_KEY");
+const ENDPOINT = getEnvVar("AZURE_OPENAI_ENDPOINT");
+const DEPLOYMENT = getEnvVar("AZURE_OPENAI_DEPLOYMENT_NAME");
+const API_VERSION = getEnvVar("AZURE_OPENAI_API_VERSION");
+
+async function azureChat(messages) {
+  const url = `${ENDPOINT}openai/deployments/${DEPLOYMENT}/chat/completions?api-version=${API_VERSION}`;
+
+  const response = await axios.post(
+    url,
+    {
+      messages,
+      max_tokens: 200,
+      temperature: 0.4
+    },
+    {
+      headers: {
+        "api-key": API_KEY,
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  return response.data.choices[0].message.content;
+}
 
 async function analyzeMood(userId, text) {
-
-  const emotionModel = 'j-hartmann/emotion-english-distilroberta-base';
-  const adviceModel = 'google/gemma-3-270m';
+  const emotionPrompt = [
+    {
+      role: "system",
+      content:
+        "You are an emotion classification model. Return ONLY a JSON array of objects [{label,score}], with three most likely emotions. Emotions allowed: happy, sad, angry, stressed, anxious, neutral."
+    },
+    {
+      role: "user",
+      content: `Analyze the text and return top 3 emotions with scores (0-100). Text: "${text}"`
+    }
+  ];
 
   let emotionsArray = [];
+
   try {
-    const result = await hf.textClassification({
-      model: emotionModel,
-      inputs: text,
-    });
-    const sorted = result.sort((a, b) => b.score - a.score);
-    emotionsArray = sorted.slice(0, 3).map(e => ({
-      label: e.label.toLowerCase(),
-      score: (e.score * 100).toFixed(2),
-    }));
+    const raw = await azureChat(emotionPrompt);
+    emotionsArray = JSON.parse(raw);
   } catch (err) {
-    console.error('Emotion analysis failed:', err);
-    emotionsArray = [{ label: 'neutral', score: '100.00' }];
+    console.error("Emotion analysis failed:", err);
+    emotionsArray = [{ label: "neutral", score: "100.00" }];
   }
 
-  const mainEmotion = emotionsArray[0]?.label || 'neutral';
-  
-  const prompt = `You are a psychologist. The user's main emotion is: ${mainEmotion}. The text they wrote is: "${text}". Give a short, practical, specific advice in English to help with this state.`;
+  const mainEmotion = emotionsArray[0]?.label || "neutral";
+  const advicePrompt = [
+    {
+      role: "system",
+      content: "You are a practical psychologist. Give short, specific, useful advice in English."
+    },
+    {
+      role: "user",
+      content: `Main emotion: ${mainEmotion}.  
+Text: "${text}".  
+Give a concise advice.`
+    }
+  ];
 
-  let advice = null;
+  let advice = "AI unavailable right now";
 
   try {
-    const result = await hf.textGeneration({
-      model: adviceModel,
-      inputs: prompt,
-      parameters: { max_new_tokens: 60 },
-      options: { wait_for_model: true }
-    });
-    advice = result.generated_text?.trim() || null;
+    advice = await azureChat(advicePrompt);
   } catch (err) {
-    console.error('AI advice generation failed:', err);
-    advice = "AI unavailable right now";
+    console.error("AI advice generation failed:", err);
   }
 
   const moodEntry = await Mood.create({

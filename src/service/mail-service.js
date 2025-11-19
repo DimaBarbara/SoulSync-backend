@@ -20,11 +20,11 @@ class MailService {
     await this.transporter.sendMail({
   from: getEnvVar('SMTP_USER'),
   to,
-  subject: 'Activate your account in ' + getEnvVar('API_URL'),
+  subject: 'Activate your account in ' + getEnvVar('CLIENT_URL'),
   text: 'Please activate your account by clicking the link below.',
   html: `
     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5;">
-      <h2 style="color: #1976d2;">Welcome to ${getEnvVar('API_URL')}!</h2>
+      <h2 style="color: #1976d2;">Welcome to ${getEnvVar('CLIENT_URL')}!</h2>
       <p>Thank you for registering. To activate your account, please click the button below:</p>
       <a href="${link}" 
          style="display: inline-block; padding: 10px 20px; margin: 20px 0; 
