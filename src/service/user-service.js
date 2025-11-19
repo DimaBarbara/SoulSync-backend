@@ -22,8 +22,12 @@ class UserService {
       password: hashPassword,
       activationLink,
     });
-    await mailService.sendActivationMail(email, `${getEnvVar('API_URL')}/api/activate/${activationLink}`
-     );
+    
+    // ОШИБКА ТАЙМАУТА (ETIMEDOUT) НА RENDER:
+    /*
+    await mailService.sendActivationMail(email, `${getEnvVar('API_URL')}/api/activate/${activationLink}`);
+    */
+    
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
@@ -51,6 +55,8 @@ class UserService {
       if(!isPassEquals) {
         throw ApiError.BadRequest('Invalid password')
       }
+      // if (!user.isActivated) { throw ApiError.BadRequest('Account not activated'); }
+      
       const userDto = new UserDto(user);
       const tokens = tokenService.generateTokens({ ...userDto });
       await tokenService.saveToken(userDto.id, tokens.refreshToken);
