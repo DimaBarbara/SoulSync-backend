@@ -15,8 +15,8 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: 'lax',
-        secure: false,
+        sameSite: 'none',
+        secure: true,
       });
 
       return res.status(201).json({
@@ -35,8 +35,8 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: 'lax',
-        secure: false,
+        sameSite: 'none',
+        secure: true,
       });
       return res.status(201).json({
         status: 201,
@@ -71,13 +71,13 @@ class UserController {
   async refresh(req, res, next) {
     try {
       const {refreshToken} = req.cookies;
-      
+
       const userData = await userService.refresh(refreshToken);
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: 'lax',
-        secure: false,
+        sameSite: 'none',
+        secure: true,
       });
       return res.status(201).json({
         status: 201,
