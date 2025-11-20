@@ -10,16 +10,24 @@ const errorMiddleware = require('./middlewares/error-middleware.js');
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-const ALLOWED_ORIGINS = process.env.CLIENT_URLS ? process.env.CLIENT_URLS.split(',') : ['http://localhost:3002'];
+const ALLOWED_ORIGINS = process.env.CLIENT_URLS 
+    ? process.env.CLIENT_URLS.split(',').map(url => url.trim()).filter(url => url.length > 0)
+    : ['http://localhost:3002'];
+console.log('Server Mode:', process.env.NODE_ENV || 'development');
+console.log('✅ CORS allowed origins:', ALLOWED_ORIGINS);
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   credentials: true,
   origin: function (origin, callback) {
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    const normalizedOrigin = origin ? origin.trim() : ''; 
+
+    if (!origin || ALLOWED_ORIGINS.includes(normalizedOrigin)) {
       callback(null, true);
     } else {
+      console.error('❌ CORS BLOCKED REQUEST: Origin', origin);
+      console.error('   Expected one of:', ALLOWED_ORIGINS);
       callback(new Error('Not allowed by CORS'));
     }
   }
