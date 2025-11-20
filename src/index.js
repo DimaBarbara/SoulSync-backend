@@ -21,12 +21,15 @@ app.use(cookieParser());
 app.use(cors({
   credentials: true,
   origin: function (origin, callback) {
-    const normalizedOrigin = origin ? origin.trim() : ''; 
-
-    if (!origin || ALLOWED_ORIGINS.includes(normalizedOrigin)) {
+    const normalizedOrigin = origin ? origin.trim() : '';
+    if (!origin || 
+        ALLOWED_ORIGINS.includes(normalizedOrigin) || 
+        normalizedOrigin.endsWith('.vercel.app')
+       ) 
+    {
       callback(null, true);
     } else {
-      console.error('❌ CORS BLOCKED REQUEST: Origin', origin);
+      console.error('🚫 CORS BLOCKED REQUEST: Origin', origin);
       console.error('   Expected one of:', ALLOWED_ORIGINS);
       callback(new Error('Not allowed by CORS'));
     }
